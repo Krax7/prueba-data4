@@ -7,4 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'prueba-data4';
+  dropdowns = ['Estado','Año','Ordenar datos'];
 }

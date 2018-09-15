@@ -1,0 +1,16 @@
+<div class="btn-group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      {{dropdownTitle}}
+    </button>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown" [ngSwitch] = "dropdownTitle">
+        <span *ngSwitchCase="'Estado'">
+          <a class="dropdown-item" href="#" *ngFor = "let daction of actions[0]">{{ daction }}</a>
+        </span>
+        <span *ngSwitchCase="'Año'">
+          <a class="dropdown-item" href="#" *ngFor = "let daction of actions[1]">{{ daction }}</a>
+        </span>
+        <span *ngSwitchCase="'Ordenar datos'">
+          <a class="dropdown-item" href="#" *ngFor = "let daction of actions[2]">{{ daction }}</a>
+        </span>
+    </div>
+</div>
