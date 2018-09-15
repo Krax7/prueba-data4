@@ -1,0 +1,13 @@
+@import "node_modules/bootstrap/dist/css/bootstrap.css";
+
+:host {
+    display: block;
+    height: 300px;
+    width: 600px;
+}
+
+svg {
+    height: 100%;
+    width: 100%;
+    background-color: blue;
+}

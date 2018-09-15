@@ -3,17 +3,17 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
-import { GraficaidhComponent } from './graficaidh/graficaidh.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { ActionComponent } from './action/action.component';
+import { BarChartComponent } from './bar-chart/bar-chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    GraficaidhComponent,
     DropdownComponent,
-    ActionComponent
+    ActionComponent,
+    BarChartComponent
   ],
   imports: [
     BrowserModule

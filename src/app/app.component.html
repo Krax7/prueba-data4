@@ -3,7 +3,8 @@
 <div class="container">
   <div class="row">
     <div class="col-12 mt-5" style="text-align:center">
-      <app-dropdown class="col-md-12" *ngFor = "let dtitle of dropdowns" [dropdownTitle] = "dtitle"></app-dropdown>
+      <app-dropdown class="col-12" *ngFor = "let dtitle of dropdowns" [dropdownTitle] = "dtitle"></app-dropdown>
     </div>
   </div>
 </div>
+<app-bar-chart [data]="data"></app-bar-chart>
