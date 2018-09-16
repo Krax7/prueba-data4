@@ -19,12 +19,13 @@ export class BarChartComponent implements OnInit, OnChanges {
   private colors: any;
   private xAxis: any;
   private yAxis: any;
-
+  
   constructor() { }
 
   ngOnInit() {
     this.createChart();
     if (this.data) {
+      console.log(this.data[0].idh);
       this.updateChart();
     }
   }
@@ -48,16 +49,19 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('class', 'bars')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
+    const year = '2012';
     // define X & Y domains
-    const xDomain = this.data.map(d => d[0]);
-    const yDomain = [0, d3.max(this.data, d => d[1])];
+    const xDomain = this.data[0].idh.map(d => d[0]);
+    console.log(xDomain);
+    const yDomain = [0, d3.max(this.data[0].idh, d => d[1])];
+    console.log(typeof(yDomain[1]));  
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
     this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
 
     // bar colors
-    this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
+    //this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
 
     // x & y axis
     this.xAxis = svg.append('g')
@@ -72,14 +76,14 @@ export class BarChartComponent implements OnInit, OnChanges {
 
   updateChart() {
     // update scales & axis
-    this.xScale.domain(this.data.map(d => d[0]));
-    this.yScale.domain([0, d3.max(this.data, d => d[1])]);
-    this.colors.domain([0, this.data.length]);
+    this.xScale.domain(this.data[0].idh.map(d => d[0]));
+    this.yScale.domain([0, d3.max(this.data[0].idh, d => d[1])]);
+    //this.colors.domain([0, this.data.length]);
     this.xAxis.transition().call(d3.axisBottom(this.xScale));
     this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
     const update = this.chart.selectAll('.bar')
-      .data(this.data);
+      .data(this.data[0].idh);
 
     // remove exiting bars
     update.exit().remove();
@@ -90,7 +94,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', d => this.yScale(d[1]))
       .attr('width', d => this.xScale.bandwidth())
       .attr('height', d => this.height - this.yScale(d[1]))
-      .style('fill', (d, i) => this.colors(i));
+      .style('fill', 'blue');
 
     // add new bars
     update
@@ -101,7 +105,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', d => this.yScale(0))
       .attr('width', this.xScale.bandwidth())
       .attr('height', 0)
-      .style('fill', (d, i) => this.colors(i))
+      .style('fill', 'red')
       .transition()
       .delay((d, i) => i * 10)
       .attr('y', d => this.yScale(d[1]))
