@@ -1,66 +1,110 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import * as D3 from 'd3';
+import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
+import * as d3 from 'd3';
 
-export type Datum = {name: string, value: number};
 @Component({
   selector: 'app-bar-chart',
   templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.css']
+  styleUrls: ['./bar-chart.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class BarChartComponent implements OnChanges {
-  @Input() height = 300;
-  @Input() width = 600;
-  @Input() data: Datum[] = [];
-  @Input() range = 100;
-
-  xScale: D3.ScaleBand<string> = null;
-  yScale: D3.ScaleLinear<number, number> = null;
-  transform = '';
-  chartWidth = this.width;
-  chartHeight = this.height;
-  barHeights: number[] = [];
-  barWidth = 0;
-  xCoordinates: number[] = [];
-
-  // Input changed, recalculate using D3
-  ngOnChanges() {
-    this.chartHeight = this.height;
-    this.chartWidth = this.width;
-    this.xScale = D3.scaleBand()
-      .domain(this.data.map((item: Datum)=>item.name)).range([0, this.chartWidth])
-      .paddingInner(0.5);
-    this.yScale = D3.scaleLinear()
-      .domain([0, this.range])
-      .range([this.chartHeight, 0]);
-
-    this.barWidth = this.xScale.bandwidth();
-    this.barHeights = this.data.map((item: Datum) =>this.barHeight(item.value));
-    this.xCoordinates = this.data.map((item: Datum) => this.xScale(item.name));
-    
-    // use transform to flip the chart upside down, so the bars start from bottom
-    this.transform = `scale(1, -1) translate(0, ${- this.chartHeight})`;
-  }
-
-  clampHeight(value: number) {
-    if (value < 0) {
-      return 0;
-    }
-    if (this.chartHeight <= 0) {
-      return 0
-    }
-    if (value > this.chartHeight) {
-      return this.chartHeight;
-    }
-    return value;
-  }
-
-  barHeight(value) {
-    return this.clampHeight(this.chartHeight - this.yScale(value));
-  }
+export class BarChartComponent implements OnInit, OnChanges {
+  @ViewChild('chart') private chartContainer: ElementRef;
+  @Input() private data: Array<any>;
+  private margin: any = { top: 20, bottom: 20, left: 20, right: 20};
+  private chart: any;
+  private width: number;
+  private height: number;
+  private xScale: any;
+  private yScale: any;
+  private colors: any;
+  private xAxis: any;
+  private yAxis: any;
 
   constructor() { }
 
   ngOnInit() {
+    this.createChart();
+    if (this.data) {
+      this.updateChart();
+    }
   }
 
+  ngOnChanges() {
+    if (this.chart) {
+      this.updateChart();
+    }
+  }
+
+  createChart() {
+    const element = this.chartContainer.nativeElement;
+    this.width = element.offsetWidth - this.margin.left - this.margin.right;
+    this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+    const svg = d3.select(element).append('svg')
+      .attr('width', element.offsetWidth)
+      .attr('height', element.offsetHeight);
+
+    // chart plot area
+    this.chart = svg.append('g')
+      .attr('class', 'bars')
+      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+
+    // define X & Y domains
+    const xDomain = this.data.map(d => d[0]);
+    const yDomain = [0, d3.max(this.data, d => d[1])];
+
+    // create scales
+    this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
+    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+
+    // bar colors
+    this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
+
+    // x & y axis
+    this.xAxis = svg.append('g')
+      .attr('class', 'axis axis-x')
+      .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+      .call(d3.axisBottom(this.xScale));
+    this.yAxis = svg.append('g')
+      .attr('class', 'axis axis-y')
+      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+      .call(d3.axisLeft(this.yScale));
+  }
+
+  updateChart() {
+    // update scales & axis
+    this.xScale.domain(this.data.map(d => d[0]));
+    this.yScale.domain([0, d3.max(this.data, d => d[1])]);
+    this.colors.domain([0, this.data.length]);
+    this.xAxis.transition().call(d3.axisBottom(this.xScale));
+    this.yAxis.transition().call(d3.axisLeft(this.yScale));
+
+    const update = this.chart.selectAll('.bar')
+      .data(this.data);
+
+    // remove exiting bars
+    update.exit().remove();
+
+    // update existing bars
+    this.chart.selectAll('.bar').transition()
+      .attr('x', d => this.xScale(d[0]))
+      .attr('y', d => this.yScale(d[1]))
+      .attr('width', d => this.xScale.bandwidth())
+      .attr('height', d => this.height - this.yScale(d[1]))
+      .style('fill', (d, i) => this.colors(i));
+
+    // add new bars
+    update
+      .enter()
+      .append('rect')
+      .attr('class', 'bar')
+      .attr('x', d => this.xScale(d[0]))
+      .attr('y', d => this.yScale(0))
+      .attr('width', this.xScale.bandwidth())
+      .attr('height', 0)
+      .style('fill', (d, i) => this.colors(i))
+      .transition()
+      .delay((d, i) => i * 10)
+      .attr('y', d => this.yScale(d[1]))
+      .attr('height', d => this.height - this.yScale(d[1]));
+  }
 }
