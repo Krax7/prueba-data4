@@ -32,7 +32,9 @@
     <div class="col-12 mt-2 text-center">
       <app-bar-chart class="col-12 mt-2" *ngIf="chartData" 
                     [data]="allData"
-                    [selYear]="selYearNum"></app-bar-chart>
+                    [selYear]="selYearNum"
+                    [selSortMode]="selSortMode"
+                    [width]="innerWidth"></app-bar-chart>
     </div>
   </div>
   <div class="row h-100 justify-content-center align-items-center">

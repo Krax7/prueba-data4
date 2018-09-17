@@ -14,34 +14,34 @@ export class BarChartComponent implements OnInit, OnChanges {
   @Input() private data: Array<any>;
   @Input() selState: string;
   @Input() selYear: number;
-  @Input() selSort: string;
+  @Input() selSortMode: string;
+  @Input() private width: number;
   private margin: any = { top: 20, bottom: 20, left: 30, right: 20};
   private chart: any;
-  @Input() private width: number;
-  @Input() private height: number;
+  private height: number;
   private xScale: any;
   private yScale: any;
   private xAxis: any;
   private yAxis: any;
   private colors: any;
   
-  constructor() { }
+  constructor() {
+    this.selState = "";
+    this.selYear = 0;
+    this.selSortMode = 'Alfabéticamente';
+   }
   
   ngOnInit() {
     this.createChart();
     if (this.data) {
+      this.selectSortMode();
       this.updateChart();
     }
-    //setTimeout(() => {
-      //this.updateChart();
-
-      // change the data periodically
-      //setInterval(() => this.updateChart(), 1000);
-    //}, 1000);
   }
 
   ngOnChanges() {
     if (this.chart) {
+      this.selectSortMode();
       this.updateChart();
     }
   }
@@ -65,7 +65,10 @@ export class BarChartComponent implements OnInit, OnChanges {
 
     // define X & Y domains
     const xDomain = this.data[this.selYear].idh.map(d => d[0]);
+    console.log(xDomain);
+    
     const yDomain = [0, d3.max(this.data[this.selYear].idh, d => d[1])];
+    console.log(yDomain);
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
@@ -83,7 +86,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', 7)
       .attr('x', -5)
       .attr('dy', '.35em')
-      .attr('transform', 'rotate(-45)')
+      .attr('transform', this.width >= 480 ? 'rotate(-45)' : '')
       .style('text-anchor','end');
     this.yAxis = svg.append('g')
       .attr('class', 'axis axis-y')
@@ -92,11 +95,15 @@ export class BarChartComponent implements OnInit, OnChanges {
   }
 
   updateChart() {
+    //Remueve la gráfica creada con anterioridad
+    d3.select('svg').remove();
+    //Vuelve a dibujar la gráfica con los datos actualizados
+    this.createChart();
     // update scales & axis
-    this.xScale.domain(this.data[this.selYear].idh.map(d => d[0]));
-    this.yScale.domain([0, d3.max(this.data[this.selYear].idh, d => d[1])]);
-    this.xAxis.transition().call(d3.axisBottom(this.xScale));
-    this.yAxis.transition().call(d3.axisLeft(this.yScale));
+    //this.xScale.domain(this.data[this.selYear].idh.map(d => d[0]));
+    //this.yScale.domain([0, d3.max(this.data[this.selYear].idh, d => d[1])]);
+    //this.xAxis.transition().call(d3.axisBottom(this.xScale));
+    //this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
     const update = this.chart.selectAll('.bar')
       .data(this.data[this.selYear].idh);
@@ -105,12 +112,13 @@ export class BarChartComponent implements OnInit, OnChanges {
     update.exit().remove();
 
     // update existing bars
-    this.chart.selectAll('.bar').transition()
-      .attr('x', d => this.xScale(d[0]))
-      .attr('y', d => this.yScale(d[1]))
-      .attr('width', d => this.xScale.bandwidth())
-      .attr('height', d => this.height - this.yScale(d[1]))
-      .style('fill', 'orange');
+    //this.chart.selectAll('.bar').transition()
+      //.attr('x', d => this.xScale(d[0]))
+      //.attr('y', d => this.yScale(d[1]))
+      //.attr('width', d => this.xScale.bandwidth())
+      //.attr('height', d => this.height - this.yScale(d[1]))
+      //.attr('transform','rotate(90)')
+      //.style('fill', 'blue');
 
     // add new bars
     update
@@ -122,9 +130,31 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('width', this.xScale.bandwidth())
       .attr('height', 0)
       .style('fill', 'orange')
-      .transition()
-      .delay((d, i) => i * 10)
+      //.transition()
+      //.delay((d, i) => i * 10)
       .attr('y', d => this.yScale(d[1]))
       .attr('height', d => this.height - this.yScale(d[1]));
+      //.attr('transform','rotate(-90)');
+  }
+
+  selectSortMode() {
+    switch (this.selSortMode) {
+      case 'Ascendente':
+        this.data[this.selYear].idh.sort(function(a, b){return a[1] > b[1] ? 1 : -1});
+        break;
+
+      case 'Descendente':
+        this.data[this.selYear].idh.sort(function(a, b){return b[1] > a[1] ? 1 : -1});
+        break;
+
+      case 'Alfabéticamente':
+        this.data[this.selYear].idh.sort();
+        break;
+
+      default:
+        //Alfabéticamente
+        this.data[this.selYear].idh.sort();
+        break;
+    }
   }
 }
