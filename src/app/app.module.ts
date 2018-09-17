@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
-import { ActionComponent } from './action/action.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
 
 @NgModule({
@@ -12,11 +12,11 @@ import { BarChartComponent } from './bar-chart/bar-chart.component';
     AppComponent,
     NavbarComponent,
     DropdownComponent,
-    ActionComponent,
     BarChartComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

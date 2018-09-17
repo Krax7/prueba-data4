@@ -1,27 +1,39 @@
-<div class="btn-group">
-    <!--<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<!--<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       {{dropdownTitle}}
     </button>-->
-    <div class="dropdown-menu" [ngSwitch] = "dropdownTitle">
-      <select name="id" id="id" *ngSwitchCase="'Estado'" class="dropdown-item">
-        <option selected="" value="">{{dropdownTitle}}</option>
-        <option class="dropdown-item" *ngFor = "let state of states">{{ state.stateName }}</option>
-      </select>
-      <!--<select name="stateOpt" id="stateOpt" #Id="ngModel" [(ngModel)]="nameId" (change)="showName();" 
-              *ngSwitchCase="'Año'">
-        <option selected="" value=""></option>
-        <option class="dropdown-item" [ngValue]="state.id" *ngFor = "let state of states">{{ state.stateName }}</option>
-      </select>
-      <select name="stateOpt" id="stateOpt" #Id="ngModel" [(ngModel)]="nameId" (change)="showName();" 
-              *ngSwitchCase="'Ordenar datos'">
-        <option selected="" value=""></option>
-        <option class="dropdown-item" [ngValue]="state.id" *ngFor = "let state of states">{{ state.stateName }}</option>
-      </select>-->
-        <!--<span *ngSwitchCase="'Año'">
-          <a class="dropdown-item" href="#" *ngFor = "let daction of actions[1]">{{ daction }}</a>
-        </span>
-        <span *ngSwitchCase="'Ordenar datos'">
-          <a class="dropdown-item" href="#" *ngFor = "let daction of actions[2]">{{ daction }}</a>
-        </span>-->
-    </div>
+<div class="row h-100 justify-content-center align-items-center">
+  <div class="col-3 p-2">
+  <select [(ngModel)]="nameId" name="selEstado" (change)="selectName();"
+          id="selEstado" class="form-control">
+    <option value="" disabled selected>Seleccione un estado</option>
+    <option *ngFor = "let state of states" [value]="state.stateName">{{ state.stateName }}</option>
+  </select>
 </div>
+<div class="col-3 p-2">
+  <select name="selAnio" id="selAnio" class="form-control">
+    <option *ngFor = "let year of years">{{ year }}</option>
+  </select>
+</div>
+<div class="col-3 p-2">
+  <select name="selEstado" id="selEstado" class="form-control">
+    <option *ngFor = "let sortMode of sortModes">{{ sortMode }}</option>
+  </select>
+  </div>
+</div>
+  <!--<select name="stateOpt" id="stateOpt" #Id="ngModel" [(ngModel)]="nameId" (change)="showName();" 
+          *ngSwitchCase="'Año'">
+    <option selected="" value=""></option>
+    <option class="dropdown-item" [ngValue]="state.id" *ngFor = "let state of states">{{ state.stateName }}</option>
+  </select>
+  <select name="stateOpt" id="stateOpt" #Id="ngModel" [(ngModel)]="nameId" (change)="showName();" 
+          *ngSwitchCase="'Ordenar datos'">
+    <option selected="" value=""></option>
+    <option class="dropdown-item" [ngValue]="state.id" *ngFor = "let state of states">{{ state.stateName }}</option>
+  </select>-->
+    <!--<span *ngSwitchCase="'Año'">
+      <a class="dropdown-item" href="#" *ngFor = "let daction of actions[1]">{{ daction }}</a>
+    </span>
+    <span *ngSwitchCase="'Ordenar datos'">
+      <a class="dropdown-item" href="#" *ngFor = "let daction of actions[2]">{{ daction }}</a>
+    </span>-->
+<!--</div>-->

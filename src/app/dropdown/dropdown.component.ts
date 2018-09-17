@@ -12,7 +12,7 @@ export class DropdownComponent implements OnInit {
   states: any;
   years: any;
   sortModes: any;
-  nameId: Number;
+  nameId: string;
 
   constructor() {
     this.getNameList();
@@ -24,7 +24,7 @@ export class DropdownComponent implements OnInit {
     alert(this.nameId);
   }
 
-  setData() {
+  ngOnInit() {
     this.states = [
       { id: '1', stateName: 'Aguascalientes' },
       { id: '2', stateName: 'Baja California' },
@@ -61,10 +61,6 @@ export class DropdownComponent implements OnInit {
     ]
     this.years = ['2012','2013','2014','2015','2016','2017']
     this.sortModes = ['Ascendente','Descendente','Alfabéticamente']
-  }
-
-  ngOnInit() {
-    this.setData();
   }
 
 }

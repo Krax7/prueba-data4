@@ -3,12 +3,36 @@
 <div class="container">
   <div class="row">
     <div class="col-12 mt-2" style="text-align:center">
-      <app-dropdown class="col-4" *ngFor = "let dtitle of dropdowns" [dropdownTitle] = "dtitle"></app-dropdown>
+      <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-3 p-2">
+          <select [(ngModel)]="selState" name="selEstado" (change)="selectState();"
+                  id="selEstado" class="form-control">
+            <option value="" disabled selected>Seleccione un estado</option>
+            <option *ngFor = "let state of states" [value]="state">{{ state }}</option>
+          </select>
+        </div>
+        <div class="col-3 p-2">
+          <select [(ngModel)]="selYear" name="selAnio" (change)="selectYear();"
+                  id="selAnio" class="form-control">
+            <option *ngFor = "let year of years">{{ year }}</option>
+          </select>
+        </div>
+        <div class="col-3 p-2">
+          <select [(ngModel)]="selSortMode" name="selOrdenar"
+                  id="selOrdenar" class="form-control">
+            <option *ngFor = "let sortMode of sortModes">{{ sortMode }}</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">
     <div class="col-12 mt-2 text-center">
-      <app-bar-chart class="col-12 mt-2" *ngIf="chartData" [data]="allData"></app-bar-chart>
+      <app-bar-chart class="col-12 mt-2" *ngIf="chartData" 
+                    [data]="allData"
+                    [selYear]="selYearNum"></app-bar-chart>
     </div>
   </div>
 </div>
+<!--[state]="selState"
+[sortMode]="selSortMode"-->

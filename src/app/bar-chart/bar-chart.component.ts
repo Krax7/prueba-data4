@@ -10,7 +10,10 @@ import * as d3 from 'd3';
 export class BarChartComponent implements OnInit, OnChanges {
   @ViewChild('chart') private chartContainer: ElementRef;
   @Input() private data: Array<any>;
-  private margin: any = { top: 20, bottom: 20, left: 20, right: 20};
+  @Input() selState: string;
+  @Input() selYear: number;
+  @Input() selSort: string;
+  private margin: any = { top: 20, bottom: 20, left: 30, right: 20};
   private chart: any;
   private width: number;
   private height: number;
@@ -42,18 +45,17 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
     const svg = d3.select(element).append('svg')
       .attr('width', element.offsetWidth)
-      .attr('height', element.offsetHeight);
+      .attr('height', element.offsetHeight + 65);
 
     // chart plot area
     this.chart = svg.append('g')
       .attr('class', 'bars')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-    const year = '2012';
     // define X & Y domains
-    const xDomain = this.data[0].idh.map(d => d[0]);
+    const xDomain = this.data[this.selYear].idh.map(d => d[0]);
     console.log(xDomain);
-    const yDomain = [0, d3.max(this.data[0].idh, d => d[1])];
+    const yDomain = [0, d3.max(this.data[this.selYear].idh, d => d[1])];
     console.log(typeof(yDomain[1]));  
 
     // create scales
@@ -67,7 +69,13 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.xAxis = svg.append('g')
       .attr('class', 'axis axis-x')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-      .call(d3.axisBottom(this.xScale));
+      .call(d3.axisBottom(this.xScale))
+    .selectAll('text')
+      .attr('y', 7)
+      .attr('x', -5)
+      .attr('dy', '.35em')
+      .attr('transform', 'rotate(-45)')
+      .style('text-anchor','end');
     this.yAxis = svg.append('g')
       .attr('class', 'axis axis-y')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
@@ -76,14 +84,14 @@ export class BarChartComponent implements OnInit, OnChanges {
 
   updateChart() {
     // update scales & axis
-    this.xScale.domain(this.data[0].idh.map(d => d[0]));
-    this.yScale.domain([0, d3.max(this.data[0].idh, d => d[1])]);
+    this.xScale.domain(this.data[this.selYear].idh.map(d => d[0]));
+    this.yScale.domain([0, d3.max(this.data[this.selYear].idh, d => d[1])]);
     //this.colors.domain([0, this.data.length]);
     this.xAxis.transition().call(d3.axisBottom(this.xScale));
     this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
     const update = this.chart.selectAll('.bar')
-      .data(this.data[0].idh);
+      .data(this.data[this.selYear].idh);
 
     // remove exiting bars
     update.exit().remove();
