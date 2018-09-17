@@ -4,15 +4,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
-import { DropdownComponent } from './dropdown/dropdown.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
+import { AutoResizeDirective } from './auto-resize.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    DropdownComponent,
-    BarChartComponent
+    BarChartComponent,
+    AutoResizeDirective
   ],
   imports: [
     BrowserModule,

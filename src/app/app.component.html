@@ -5,22 +5,24 @@
     <div class="col-12 mt-2" style="text-align:center">
       <div class="row h-100 justify-content-center align-items-center">
         <div class="col-3 p-2">
+          <label for="selEstado">Estado:</label>
           <select [(ngModel)]="selState" name="selEstado" (change)="selectState();"
                   id="selEstado" class="form-control">
-            <option value="" disabled selected>Seleccione un estado</option>
             <option *ngFor = "let state of states" [value]="state">{{ state }}</option>
           </select>
         </div>
         <div class="col-3 p-2">
+          <label for="selEstado">Año:</label>
           <select [(ngModel)]="selYear" name="selAnio" (change)="selectYear();"
                   id="selAnio" class="form-control">
-            <option *ngFor = "let year of years">{{ year }}</option>
+            <option *ngFor = "let year of years" [value]="year">{{ year }}</option>
           </select>
         </div>
         <div class="col-3 p-2">
-          <select [(ngModel)]="selSortMode" name="selOrdenar"
+            <label for="selEstado">Ordenar por:</label>
+          <select [(ngModel)]="selSortMode" name="selOrdenar" (change)="selectSortMode();"
                   id="selOrdenar" class="form-control">
-            <option *ngFor = "let sortMode of sortModes">{{ sortMode }}</option>
+            <option *ngFor = "let sortMode of sortModes" [value]="sortMode">{{ sortMode }}</option>
           </select>
         </div>
       </div>
@@ -32,6 +34,25 @@
                     [data]="allData"
                     [selYear]="selYearNum"></app-bar-chart>
     </div>
+  </div>
+  <div class="row h-100 justify-content-center align-items-center">
+    <div class="col-9 mt-5">
+      <div class="card border-primary">
+          <div class="card-header">Resumen</div>
+          <div class="card-body">
+            <div class="row h-100 justify-content-center align-items-center">
+              <div class="col-6">
+                <h4 class="card-title">Año: {{ selYear }}</h4>
+                <p class="card-text">Promedio IDH: {{ promIDHstr }}</p>
+              </div>
+              <div class="col-6">
+                <p class="card-text">IDH más alto: {{ IDHmaxstr }}</p>
+                <p class="card-text">IDH más bajo: {{ IDHminstr }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 <!--[state]="selState"

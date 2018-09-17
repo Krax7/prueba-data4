@@ -13,26 +13,49 @@ export class AppComponent implements OnInit{
   private selYear: string;
   private selYearNum: number;
   private selSortMode: string;
-  nameList: any;
   states: any;
   years: any;
   sortModes: any;
-
-  getNameList() {
-    this.nameList = this.states;
-  }
+  promIDH: number;
+  IDHmax: number;
+  IDHmin: number;
+  promIDHstr: string;
+  IDHmaxstr: string;
+  IDHminstr: string;
 
   selectState() {
     alert(this.selState);
   }
 
   selectYear(){
-    alert(this.selYear);
     this.selYearNum = this.findYear();
+    this.selectSortMode();
   }
 
   selectSortMode() {
-    alert(this.selSortMode);
+    switch (this.selSortMode) {
+      case 'Ascendente':
+        this.allData[this.selYearNum].idh.sort(function(a, b){return a[1] > b[1] ? 1 : -1});
+        console.log('Después:');
+        console.log(this.allData[this.selYearNum].idh);
+        break;
+
+      case 'Descendente':
+        this.allData[this.selYearNum].idh.sort(function(a, b){return b[1] > a[1] ? 1 : -1});
+        break;
+
+      case 'Alfabéticamente':
+        this.allData[this.selYearNum].idh.sort();
+        console.log('Alfabéticamente:');
+        console.log(this.allData[this.selYearNum].idh);
+        break;
+
+      default:
+        console.log('Alfabéticamente:');
+        console.log(this.allData[this.selYearNum].idh);
+        this.allData[this.selYearNum].idh.sort();
+        break;
+    }
   }
 
   findYear(){
@@ -45,20 +68,23 @@ export class AppComponent implements OnInit{
   }
 
   constructor() {
-    this.getNameList();
     this.selState = "";
+    this.selYear = "2010";
     this.selYearNum = 0;
-    this.selSortMode = "";
+    this.selSortMode = 'Alfabeticamente';
   }
 
   ngOnInit() {
-    this.states = ['Aguascalientes','Baja California','Baja California Sur','Campeche','Coahuila de Zaragoza','Colima','Chiapas','Chihuahua','Ciudad de México','Durango','Guanajuato','Guerrero',
-    'Hidalgo','Jalisco','Estado de México','Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla','Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora',
+    //Arreglos que contienen todas las opciones presentes en los dropdowns
+    this.states = ['Aguascalientes','Baja California','Baja California Sur','Campeche','Chiapas','Chihuahua','Ciudad de México','Coahuila de Zaragoza','Colima','Durango','Estado de México',
+    'Guanajuato','Guerrero','Hidalgo','Jalisco','Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla','Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora',
     'Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatán','Zacatecas'];
-    this.years = ['2012','2013','2014','2015','2016','2017'];
+    this.years = ['2010','2011','2012','2013','2014','2015','2016','2017'];
     this.sortModes = ['Ascendente','Descendente','Alfabéticamente'];
-    // give everything a chance to get loaded before starting the animation to reduce choppiness
+    //Se generan los datos
     this.generateData();
+    //Se obtiene el promedio de los IDH, el más alto y el más bajo de ellos.
+    this.generateSummary();
   }
 
   generateData() {
@@ -76,7 +102,26 @@ export class AppComponent implements OnInit{
         idh: this.chartData
       });
     }
-    //console.log(this.allData);
-    //console.log(this.chartData);
+  }
+
+    generateSummary(){
+      //Obtener el promedio de todos los IDH
+      this.promIDH = 0;
+      for(let i = 0; i < this.allData[this.selYearNum].idh.length; i++){
+        this.promIDH += this.allData[this.selYearNum].idh[i][1];        
+      }
+      this.promIDH = this.promIDH / 32;
+      this.promIDHstr = this.promIDH.toFixed(2);
+      console.log(this.promIDH);
+      //Obtener el IDH más alto
+      this.allData[this.selYearNum].idh.sort(function(a, b){return b[1] > a[1] ? 1 : -1});
+      this.IDHmin = this.allData[this.selYearNum].idh[0][1];
+      this.IDHminstr = this.IDHmin.toFixed(2);
+      //Obtener el ID más bajo
+      this.allData[this.selYearNum].idh.sort(function(a, b){return a[1] > b[1] ? 1 : -1});
+      this.IDHmax = this.allData[this.selYearNum].idh[0][1];
+      this.IDHmaxstr = this.IDHmax.toFixed(2);
+
+      this.selectSortMode();
     }
 }

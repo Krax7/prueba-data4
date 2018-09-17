@@ -1,5 +1,7 @@
 import { Component, OnInit, OnChanges, ViewChild, ElementRef, Input, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
+import { svg } from 'd3';
+import { SelectControlValueAccessor } from '@angular/forms';
 
 @Component({
   selector: 'app-bar-chart',
@@ -15,28 +17,37 @@ export class BarChartComponent implements OnInit, OnChanges {
   @Input() selSort: string;
   private margin: any = { top: 20, bottom: 20, left: 30, right: 20};
   private chart: any;
-  private width: number;
-  private height: number;
+  @Input() private width: number;
+  @Input() private height: number;
   private xScale: any;
   private yScale: any;
-  private colors: any;
   private xAxis: any;
   private yAxis: any;
+  private colors: any;
   
   constructor() { }
-
+  
   ngOnInit() {
     this.createChart();
     if (this.data) {
-      console.log(this.data[0].idh);
       this.updateChart();
     }
+    //setTimeout(() => {
+      //this.updateChart();
+
+      // change the data periodically
+      //setInterval(() => this.updateChart(), 1000);
+    //}, 1000);
   }
 
   ngOnChanges() {
     if (this.chart) {
       this.updateChart();
     }
+  }
+
+  setColor(){
+    
   }
 
   createChart() {
@@ -54,9 +65,7 @@ export class BarChartComponent implements OnInit, OnChanges {
 
     // define X & Y domains
     const xDomain = this.data[this.selYear].idh.map(d => d[0]);
-    console.log(xDomain);
     const yDomain = [0, d3.max(this.data[this.selYear].idh, d => d[1])];
-    console.log(typeof(yDomain[1]));  
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
@@ -86,7 +95,6 @@ export class BarChartComponent implements OnInit, OnChanges {
     // update scales & axis
     this.xScale.domain(this.data[this.selYear].idh.map(d => d[0]));
     this.yScale.domain([0, d3.max(this.data[this.selYear].idh, d => d[1])]);
-    //this.colors.domain([0, this.data.length]);
     this.xAxis.transition().call(d3.axisBottom(this.xScale));
     this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
@@ -102,7 +110,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', d => this.yScale(d[1]))
       .attr('width', d => this.xScale.bandwidth())
       .attr('height', d => this.height - this.yScale(d[1]))
-      .style('fill', 'blue');
+      .style('fill', 'orange');
 
     // add new bars
     update
@@ -113,7 +121,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', d => this.yScale(0))
       .attr('width', this.xScale.bandwidth())
       .attr('height', 0)
-      .style('fill', 'red')
+      .style('fill', 'orange')
       .transition()
       .delay((d, i) => i * 10)
       .attr('y', d => this.yScale(d[1]))
