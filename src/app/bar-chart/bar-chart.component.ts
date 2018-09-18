@@ -116,7 +116,7 @@ export class BarChartComponent implements OnInit, OnChanges {
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
-    this.yScale = d3.scaleLinear().domain(yDomain).rangeRound([this.height, 0]);
+    this.yScale = d3.scaleLinear().domain(yDomain).rangeRound(this.winWidth >= 480 ? [this.height, 0] : [0, this.height]);
 
     // x & y axis
     this.xAxis = svg.append('g')
