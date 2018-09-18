@@ -34,7 +34,7 @@
                     [data]="allData"
                     [selYear]="selYearNum"
                     [selSortMode]="selSortMode"
-                    [width]="innerWidth"></app-bar-chart>
+                    [winWidth]="innerWidth"></app-bar-chart>
     </div>
   </div>
   <div class="row h-100 justify-content-center align-items-center">
@@ -48,8 +48,8 @@
                 <p class="card-text">Promedio IDH: {{ promIDHstr }}</p>
               </div>
               <div class="col-6">
-                <p class="card-text">IDH más alto: {{ IDHmaxstr }}</p>
-                <p class="card-text">IDH más bajo: {{ IDHminstr }}</p>
+                <p class="card-text">IDH más alto: {{ IDHmax }}</p>
+                <p class="card-text">IDH más bajo: {{ IDHmin }}</p>
               </div>
             </div>
           </div>
@@ -57,5 +57,4 @@
       </div>
   </div>
 </div>
-<!--[state]="selState"
-[sortMode]="selSortMode"-->
+<!--[state]="selState"-->

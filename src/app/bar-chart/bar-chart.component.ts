@@ -15,12 +15,14 @@ export class BarChartComponent implements OnInit, OnChanges {
   @Input() selState: string;
   @Input() selYear: number;
   @Input() selSortMode: string;
-  @Input() private width: number;
+  @Input() private winWidth: number;
+  private width: number;
+  private height: number;
   private margin: any = { top: 20, bottom: 20, left: 30, right: 20};
   private chart: any;
-  private height: number;
   private xScale: any;
   private yScale: any;
+  private dataCont: Array<any>;
   private xAxis: any;
   private yAxis: any;
   private colors: any;
@@ -44,10 +46,33 @@ export class BarChartComponent implements OnInit, OnChanges {
       this.selectSortMode();
       this.updateChart();
     }
+    console.log(this.width);
+    
   }
 
-  setColor(){
-    
+  selectValues(option: number){
+    this.dataCont = [];
+    if(option === 0){
+      for(let i = 0; i < this.data[this.selYear].idh.length; i++) {
+        this.dataCont.push([
+          this.data[this.selYear].idh[i][1],
+          this.data[this.selYear].idh[i][2]
+        ]);
+      } 
+      //console.log("Sin abrv");
+      //console.log(this.dataCont);
+      return this.dataCont;
+    } else if(option === 1) {
+        for(let i = 0; i < this.data[this.selYear].idh.length; i++) {
+          this.dataCont.push([
+            this.data[this.selYear].idh[i][0],
+            this.data[this.selYear].idh[i][2]
+          ]);
+      }
+      //console.log("Con abrv");
+      //console.log(this.dataCont);
+      return this.dataCont;
+    }
   }
 
   createChart() {
@@ -56,23 +81,29 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
     const svg = d3.select(element).append('svg')
       .attr('width', element.offsetWidth)
-      .attr('height', element.offsetHeight + 65);
+      .attr('height', this.width >= 480 ? element.offsetHeight + 65 : element.offsetHeight + 85);
 
     // chart plot area
     this.chart = svg.append('g')
       .attr('class', 'bars')
-      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+      .attr('transform', `translate(${this.winWidth >= 480 ? this.margin.left : 390}, ${this.margin.bottom})`);
+      //`translate(${this.margin.left}, ${this.margin.top})`
 
     // define X & Y domains
-    const xDomain = this.data[this.selYear].idh.map(d => d[0]);
-    console.log(xDomain);
+    const xDomain = this.winWidth >= 480 ? this.data[this.selYear].idh.map(d => d[1]) : this.data[this.selYear].idh.map(d => d[0]);
+    //console.log(xDomain);
     
-    const yDomain = [0, d3.max(this.data[this.selYear].idh, d => d[1])];
-    console.log(yDomain);
+    const yDomain = [0, parseFloat(d3.max(this.data[this.selYear].idh, d => d[2]))];
+    //console.log(yDomain);
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
-    this.yScale = d3.scaleLinear().domain(yDomain).range([this.height, 0]);
+    //console.log(this.xScale);
+    
+    this.yScale = d3.scaleLinear().domain(yDomain).rangeRound([this.height, 0]);
+    //this.yScale = d3.scaleLinear().domain(yDomain).rangeRound([this.height, 0]);
+    //console.log(this.yScale);
+    
 
     // bar colors
     //this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
@@ -80,18 +111,18 @@ export class BarChartComponent implements OnInit, OnChanges {
     // x & y axis
     this.xAxis = svg.append('g')
       .attr('class', 'axis axis-x')
-      .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-      .call(d3.axisBottom(this.xScale))
+      .attr('transform', `translate(${this.margin.left}, ${this.winWidth >= 480 ? this.margin.top + this.height : this.margin.top})`)
+      .call(d3.axisBottom(this.winWidth >= 480 ? this.xScale : this.yScale))
     .selectAll('text')
       .attr('y', 7)
       .attr('x', -5)
       .attr('dy', '.35em')
-      .attr('transform', this.width >= 480 ? 'rotate(-45)' : '')
+      .attr('transform', this.winWidth >= 480 ? 'rotate(-45)' : '')
       .style('text-anchor','end');
     this.yAxis = svg.append('g')
       .attr('class', 'axis axis-y')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-      .call(d3.axisLeft(this.yScale));
+      .call(d3.axisLeft(this.winWidth >= 480 ? this.yScale : this.xScale));
   }
 
   updateChart() {
@@ -106,7 +137,7 @@ export class BarChartComponent implements OnInit, OnChanges {
     //this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
     const update = this.chart.selectAll('.bar')
-      .data(this.data[this.selYear].idh);
+      .data(this.winWidth >= 480 ? this.selectValues(0) : this.selectValues(1));
 
     // remove exiting bars
     update.exit().remove();
@@ -133,18 +164,20 @@ export class BarChartComponent implements OnInit, OnChanges {
       //.transition()
       //.delay((d, i) => i * 10)
       .attr('y', d => this.yScale(d[1]))
-      .attr('height', d => this.height - this.yScale(d[1]));
-      //.attr('transform','rotate(-90)');
+      .attr('height', d => this.height - this.yScale(d[1]))
+      .attr('transform', this.winWidth >= 480 ? '' : 'rotate(90)');
+      console.log(this.height);
+      
   }
 
   selectSortMode() {
     switch (this.selSortMode) {
       case 'Ascendente':
-        this.data[this.selYear].idh.sort(function(a, b){return a[1] > b[1] ? 1 : -1});
+        this.data[this.selYear].idh.sort(function(a, b){return a[2] > b[2] ? 1 : -1});
         break;
 
       case 'Descendente':
-        this.data[this.selYear].idh.sort(function(a, b){return b[1] > a[1] ? 1 : -1});
+        this.data[this.selYear].idh.sort(function(a, b){return b[2] > a[2] ? 1 : -1});
         break;
 
       case 'Alfabéticamente':
