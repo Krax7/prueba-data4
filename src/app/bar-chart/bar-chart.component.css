@@ -1,13 +1,16 @@
+/* Dimensiones para el contenedor del bar-chart */
 .d3-chart {
     width: 100%;
     height: 400px;
 }
 
+/* Color para los ejes */
 .d3-chart .axis path,
 .d3-chart .axis line {
     stroke: #999;
 }
 
+/* Color para el texto de las escalas */
 .d3-chart .axis text {
     fill: #999;
 }
