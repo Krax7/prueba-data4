@@ -1,5 +1,6 @@
-<!--The content below is only a placeholder and can be replaced.-->
+<!--Navbar-->
 <app-navbar></app-navbar>
+<!--Dropdowns de control-->
 <div class="container">
   <div class="row">
     <div class="col-12 mt-2" style="text-align:center">
@@ -28,6 +29,7 @@
       </div>
     </div>
   </div>
+  <!--Bar-chart-->
   <div class="row">
     <div class="col-12 mt-2 text-center">
       <app-bar-chart class="col-12 mt-2" *ngIf="chartData" 
@@ -38,6 +40,7 @@
                     [winWidth]="innerWidth"></app-bar-chart>
     </div>
   </div>
+  <!--Card contenedora del Resumen de IDH-->
   <div class="row h-100 justify-content-center align-items-center">
     <div class="col-9 mt-5 mb-2">
       <div class="card border-primary">
@@ -58,4 +61,3 @@
       </div>
   </div>
 </div>
-<!--[state]="selState"-->
