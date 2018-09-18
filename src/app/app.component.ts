@@ -25,9 +25,16 @@ export class AppComponent implements OnInit{
   public innerHeight: any;
   
   selectState() {
-    alert(this.selState);
-    console.log(window.innerWidth);
-    console.log(window.innerHeight);
+    if (this.innerWidth >= 480) {
+      return this.selState;
+    } else {
+      let x = this.states.indexOf(this.selState);
+      this.selState = this.statesAbv[x];
+      return this.selState;
+    }
+    
+    //console.log(window.innerWidth);
+    //console.log(window.innerHeight);
   }
 
   selectYear(){
@@ -43,14 +50,14 @@ export class AppComponent implements OnInit{
   findYear(){
     for (let i = 0; i < this.allData.length; i++){
       if(this.allData[i].year === this.selYear){
-        console.log("Año encontrado " + i);
+        //console.log("Año encontrado " + i);
         return i;
       }
     }
   }
 
   constructor() {
-    this.selState = "";
+    this.selState = 'Aguascalientes';
     this.selYear = '2010';
     this.selYearNum = 0;
     this.selSortMode = 'Alfabéticamente';
@@ -89,8 +96,6 @@ export class AppComponent implements OnInit{
         idh: this.chartData
       });
     }
-    console.log(this.allData);
-    
   }
 
     generateSummary(){
@@ -112,7 +117,7 @@ export class AppComponent implements OnInit{
     @HostListener('window:resize', ['$event'])
       onResize(event) {
       this.innerWidth = window.innerWidth;
-      console.log(this.innerWidth);
+      //console.log(this.innerWidth);
       //this.innerHeight = window.innerHeight;
     }
 }

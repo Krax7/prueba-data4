@@ -32,13 +32,14 @@
     <div class="col-12 mt-2 text-center">
       <app-bar-chart class="col-12 mt-2" *ngIf="chartData" 
                     [data]="allData"
+                    [selState]="selState"
                     [selYear]="selYearNum"
                     [selSortMode]="selSortMode"
                     [winWidth]="innerWidth"></app-bar-chart>
     </div>
   </div>
   <div class="row h-100 justify-content-center align-items-center">
-    <div class="col-9 mt-5">
+    <div class="col-9 mt-5 mb-2">
       <div class="card border-primary">
           <div class="card-header">Resumen</div>
           <div class="card-body">

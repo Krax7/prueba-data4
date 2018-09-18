@@ -28,7 +28,8 @@ export class BarChartComponent implements OnInit, OnChanges {
   private colors: any;
   
   constructor() {
-    this.selState = "";
+    this.selState = 'Aguascalientes';
+    console.log(this.selState);
     this.selYear = 0;
     this.selSortMode = 'Alfabéticamente';
    }
@@ -46,8 +47,6 @@ export class BarChartComponent implements OnInit, OnChanges {
       this.selectSortMode();
       this.updateChart();
     }
-    console.log(this.width);
-    
   }
 
   selectValues(option: number){
@@ -56,7 +55,8 @@ export class BarChartComponent implements OnInit, OnChanges {
       for(let i = 0; i < this.data[this.selYear].idh.length; i++) {
         this.dataCont.push([
           this.data[this.selYear].idh[i][1],
-          this.data[this.selYear].idh[i][2]
+          this.data[this.selYear].idh[i][2],
+          this.data[this.selYear].idh[i][1] === this.selState ? true : false
         ]);
       } 
       //console.log("Sin abrv");
@@ -66,12 +66,34 @@ export class BarChartComponent implements OnInit, OnChanges {
         for(let i = 0; i < this.data[this.selYear].idh.length; i++) {
           this.dataCont.push([
             this.data[this.selYear].idh[i][0],
-            this.data[this.selYear].idh[i][2]
+            this.data[this.selYear].idh[i][2],
+            this.data[this.selYear].idh[i][0] === this.selState ? true : false
           ]);
       }
       //console.log("Con abrv");
       //console.log(this.dataCont);
       return this.dataCont;
+    }
+  }
+
+  selectSortMode() {
+    switch (this.selSortMode) {
+      case 'Ascendente':
+        this.data[this.selYear].idh.sort(function(a, b){return a[2] > b[2] ? 1 : -1});
+        break;
+
+      case 'Descendente':
+        this.data[this.selYear].idh.sort(function(a, b){return b[2] > a[2] ? 1 : -1});
+        break;
+
+      case 'Alfabéticamente':
+        this.data[this.selYear].idh.sort();
+        break;
+
+      default:
+        //Alfabéticamente
+        this.data[this.selYear].idh.sort();
+        break;
     }
   }
 
@@ -87,26 +109,14 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.chart = svg.append('g')
       .attr('class', 'bars')
       .attr('transform', `translate(${this.winWidth >= 480 ? this.margin.left : 390}, ${this.margin.bottom})`);
-      //`translate(${this.margin.left}, ${this.margin.top})`
 
     // define X & Y domains
     const xDomain = this.winWidth >= 480 ? this.data[this.selYear].idh.map(d => d[1]) : this.data[this.selYear].idh.map(d => d[0]);
-    //console.log(xDomain);
-    
     const yDomain = [0, parseFloat(d3.max(this.data[this.selYear].idh, d => d[2]))];
-    //console.log(yDomain);
 
     // create scales
     this.xScale = d3.scaleBand().padding(0.1).domain(xDomain).rangeRound([0, this.width]);
-    //console.log(this.xScale);
-    
     this.yScale = d3.scaleLinear().domain(yDomain).rangeRound([this.height, 0]);
-    //this.yScale = d3.scaleLinear().domain(yDomain).rangeRound([this.height, 0]);
-    //console.log(this.yScale);
-    
-
-    // bar colors
-    //this.colors = d3.scaleLinear().domain([0, this.data.length]).range(<any[]>['red', 'blue']);
 
     // x & y axis
     this.xAxis = svg.append('g')
@@ -131,26 +141,10 @@ export class BarChartComponent implements OnInit, OnChanges {
     //Vuelve a dibujar la gráfica con los datos actualizados
     this.createChart();
     // update scales & axis
-    //this.xScale.domain(this.data[this.selYear].idh.map(d => d[0]));
-    //this.yScale.domain([0, d3.max(this.data[this.selYear].idh, d => d[1])]);
-    //this.xAxis.transition().call(d3.axisBottom(this.xScale));
-    //this.yAxis.transition().call(d3.axisLeft(this.yScale));
 
     const update = this.chart.selectAll('.bar')
-      .data(this.winWidth >= 480 ? this.selectValues(0) : this.selectValues(1));
-
-    // remove exiting bars
-    update.exit().remove();
-
-    // update existing bars
-    //this.chart.selectAll('.bar').transition()
-      //.attr('x', d => this.xScale(d[0]))
-      //.attr('y', d => this.yScale(d[1]))
-      //.attr('width', d => this.xScale.bandwidth())
-      //.attr('height', d => this.height - this.yScale(d[1]))
-      //.attr('transform','rotate(90)')
-      //.style('fill', 'blue');
-
+      .data(this.winWidth >= 480 ? this.selectValues(0) : this.selectValues(1), function(d) { return d[2] });
+    
     // add new bars
     update
       .enter()
@@ -160,34 +154,14 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', d => this.yScale(0))
       .attr('width', this.xScale.bandwidth())
       .attr('height', 0)
-      .style('fill', 'orange')
-      //.transition()
-      //.delay((d, i) => i * 10)
+      .style('fill', function(d) { if(d[2]) return 'red' ; 
+                                    else return 'orange';})
+      .transition()
+      .delay((d, i) => i * 10)
       .attr('y', d => this.yScale(d[1]))
       .attr('height', d => this.height - this.yScale(d[1]))
       .attr('transform', this.winWidth >= 480 ? '' : 'rotate(90)');
-      console.log(this.height);
-      
-  }
-
-  selectSortMode() {
-    switch (this.selSortMode) {
-      case 'Ascendente':
-        this.data[this.selYear].idh.sort(function(a, b){return a[2] > b[2] ? 1 : -1});
-        break;
-
-      case 'Descendente':
-        this.data[this.selYear].idh.sort(function(a, b){return b[2] > a[2] ? 1 : -1});
-        break;
-
-      case 'Alfabéticamente':
-        this.data[this.selYear].idh.sort();
-        break;
-
-      default:
-        //Alfabéticamente
-        this.data[this.selYear].idh.sort();
-        break;
-    }
+    // remove exiting bars
+    update.exit().remove();
   }
 }
